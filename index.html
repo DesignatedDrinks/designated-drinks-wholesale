@@ -20,11 +20,19 @@ async function fetchProducts() {
             const variant = row[4] || "No Variants";
             const variantPrice = row[5] ? parseFloat(row[5]).toFixed(2) : "N/A";
             const wholesaleVariantPrice = variantPrice !== "N/A" ? (variantPrice * 0.85).toFixed(2) : "N/A";
+            const imageUrl = row[6] || ""; // Assuming the image URL is in column 6
 
             const tr = document.createElement("tr");
             tr.innerHTML = `
-                <td>${productName}</td>
-                <td>${brand}</td>
+                <td>
+                    <div style="display: flex; align-items: center;">
+                        ${imageUrl ? `<img src="${imageUrl}" alt="${productName}" style="width: 50px; height: auto; margin-right: 10px;">` : ""}
+                        <div>
+                            <strong>${productName}</strong><br>
+                            <span style="color: gray; font-size: 0.9em;">${brand}</span>
+                        </div>
+                    </div>
+                </td>
                 <td>${size}</td>
                 <td>$${price ? price.toFixed(2) : "N/A"} CAD</td>
                 <td>$${wholesalePrice} CAD</td>
