@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Head from "next/head";
 
 const SHEET_ID = "1m-2ap-loUD7rByaFh-mzbwlvTK0QZNp6uzLzdCVrX7s";
-const API_KEY = "YOUR_GOOGLE_SHEETS_API_KEY";
+const API_KEY = https://docs.google.com/spreadsheets/d/1m-2ap-loUD7rByaFh-mzbwlvTK0QZNp6uzLzdCVrX7s/edit?usp=sharing;
 const SHEET_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1?key=${API_KEY}`;
 
 export default function Home() {
