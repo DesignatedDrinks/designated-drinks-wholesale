@@ -55,8 +55,11 @@
 
                 if (!data.values || data.values.length < 2) {
                     console.error("No valid product data found.");
+                    document.getElementById("loading").innerText = "No products available.";
                     return;
                 }
+                
+                document.getElementById("loading").style.display = "none";
 
                 const rows = data.values.slice(1);
                 const tableBody = document.querySelector("#productTable tbody");
@@ -86,6 +89,7 @@
                 });
             } catch (error) {
                 console.error("Error fetching data:", error);
+                document.getElementById("loading").innerText = "Error loading products.";
             }
         }
 
