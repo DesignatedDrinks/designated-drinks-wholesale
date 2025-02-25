@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Head from "next/head";
 
 const SHEET_ID = "1m-2ap-loUD7rByaFh-mzbwlvTK0QZNp6uzLzdCVrX7s";
-const API_KEY = https://docs.google.com/spreadsheets/d/1m-2ap-loUD7rByaFh-mzbwlvTK0QZNp6uzLzdCVrX7s/edit?usp=sharing;
+const API_KEY = "AIzaSyDQ6rhmIiJ7F8udDUEQ3K2lcpGXA-L0q90";  // Replace this with your actual API key
 const SHEET_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1?key=${API_KEY}`;
 
 export default function Home() {
@@ -11,18 +11,26 @@ export default function Home() {
 
   useEffect(() => {
     fetch(SHEET_URL)
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
       .then((data) => {
+        if (!data.values) {
+          throw new Error("No data found in Google Sheet.");
+        }
         const rows = data.values;
         const formattedProducts = rows.slice(1).map((row) => ({
-          name: row[0],
-          brand: row[1],
-          size: row[2],
-          price: row[3],
+          name: row[0] || "Unknown Product",
+          brand: row[1] || "Unknown Brand",
+          size: row[2] || "N/A",
+          price: row[3] ? `$${row[3]} CAD` : "Price Not Available",
         }));
         setProducts(formattedProducts);
       })
-      .catch((error) => console.error("Error fetching data: ", error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   const filteredProducts = products.filter((product) =>
@@ -45,14 +53,18 @@ export default function Home() {
           onChange={(e) => setSearch(e.target.value)}
         />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {filteredProducts.map((product, index) => (
-            <div key={index} className="border p-4 rounded shadow">
-              <h2 className="text-xl font-semibold">{product.name}</h2>
-              <p className="text-gray-600">Brand: {product.brand}</p>
-              <p className="text-gray-600">Size: {product.size}</p>
-              <p className="text-gray-800 font-bold">${product.price} CAD</p>
-            </div>
-          ))}
+          {filteredProducts.length > 0 ? (
+            filteredProducts.map((product, index) => (
+              <div key={index} className="border p-4 rounded shadow">
+                <h2 className="text-xl font-semibold">{product.name}</h2>
+                <p className="text-gray-600">Brand: {product.brand}</p>
+                <p className="text-gray-600">Size: {product.size}</p>
+                <p className="text-gray-800 font-bold">{product.price}</p>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500">No products found.</p>
+          )}
         </div>
       </main>
     </div>
