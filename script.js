@@ -1,22 +1,21 @@
-const sheetUrl = "https://docs.google.com/spreadsheets/d/1m-2ap-loUD7rByaFh-mzbwlvTK0QZNp6uzLzdCVrX7s/edit?gid=0#gid=0";
+const sheetUrl = "https://sheets.googleapis.com/v4/spreadsheets/YOUR_SHEET_ID/values/Sheet1?key=YOUR_API_KEY";
 
 document.addEventListener("DOMContentLoaded", () => {
     fetch(sheetUrl)
-        .then(response => response.text())
+        .then(response => response.json())
         .then(data => {
-            const rows = data.split("\n").slice(1);
+            const rows = data.values.slice(1); // Remove header row
             const table = document.getElementById("product-table");
 
             rows.forEach(row => {
-                const columns = row.split(",");
-                if (columns.length > 4) {
+                if (row.length > 4) {
                     const tr = document.createElement("tr");
                     tr.innerHTML = `
-                        <td>${columns[0]}</td>
-                        <td>${columns[1]}</td>
-                        <td>${columns[2]}</td>
-                        <td>$${columns[3]}</td>
-                        <td><img src="${columns[4]}" alt="Product Image" width="80"></td>
+                        <td>${row[0]}</td>
+                        <td>${row[1]}</td>
+                        <td>${row[2]}</td>
+                        <td>$${row[3]}</td>
+                        <td><img src="${row[4]}" alt="Product Image" width="80"></td>
                         <td><input type="number" class="order-input" min="0"></td>
                     `;
                     table.appendChild(tr);
