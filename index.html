@@ -9,34 +9,76 @@
 <body>
     <div class="container">
         <h1>Wholesale Product Catalog</h1>
-        <table>
-            <tr>
-                <th>Product</th>
-                <th>Description</th>
-                <th>Size</th>
-                <th>Price (CAD)</th>
-                <th>Image</th>
-                <th>Order Qty</th>
-            </tr>
-            <tr>
-                <td>Big Spruce Brewing Cereal Thriller</td>
-                <td>Get ready for a non-alcoholic thrill ride...</td>
-                <td>473mL Can</td>
-                <td>$4.50</td>
-                <td><img src="https://cdn.shopify.com/s/files/1/0638/0100/0105/products/cereal_thriller.jpg" alt="Product Image"></td>
-                <td><input type="number" class="order-input" min="0"></td>
-            </tr>
-            <tr>
-                <td>Harmon's El Portero Vanilla Porter</td>
-                <td>Meet the smooth and creamy vanilla porter...</td>
-                <td>355mL Can</td>
-                <td>$3.50</td>
-                <td><img src="https://cdn.shopify.com/s/files/1/0638/0100/0105/products/el_portero.jpg" alt="Product Image"></td>
-                <td><input type="number" class="order-input" min="0"></td>
-            </tr>
+        <table id="product-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Description</th>
+                    <th>Size</th>
+                    <th>Price (CAD)</th>
+                    <th>Image</th>
+                    <th>Order Qty</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data from Google Sheets will be dynamically inserted here -->
+            </tbody>
         </table>
         <button class="order-btn" onclick="submitOrder()">Submit Order</button>
     </div>
-    <script src="script.js"></script>
+    <script>
+        const sheetUrl = "https://sheets.googleapis.com/v4/spreadsheets/1m-2ap-loUD7rByaFh-mzbwlvTK0QZNp6uzLzdCVrX7s/values/Sheet1?key=AIzaSyDQ6rhmIiJ7F8udDUEQ3K2lcpGXA-L0q90";
+        // Replace 'YOUR_API_KEY' with your actual Google API Key (found in Google Cloud Console under Credentials)
+        
+        document.addEventListener("DOMContentLoaded", () => {
+            fetch(sheetUrl)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.values) {
+                        console.error("No data found in Google Sheet.");
+                        return;
+                    }
+        
+                    const rows = data.values.slice(1); // Skip header row
+                    const tableBody = document.querySelector("#product-table tbody");
+        
+                    rows.forEach((row, index) => {
+                        if (row.length > 0 && row.some(cell => cell.trim() !== "")) { // Ensure non-empty rows are displayed
+                            while (row.length < 5) row.push(""); // Fill missing columns
+        
+                            const [product, description, size, price, imageUrl] = row;
+        
+                            const tr = document.createElement("tr");
+                            tr.innerHTML = `
+                                <td>${product || "N/A"}</td>
+                                <td>${description || "No description available"}</td>
+                                <td>${size || "N/A"}</td>
+                                <td>$${price || "0.00"}</td>
+                                <td><img src="${imageUrl || "https://via.placeholder.com/80"}" alt="Product Image" width="80"></td>
+                                <td><input type="number" class="order-input" min="0"></td>
+                            `;
+                            tableBody.appendChild(tr);
+                        }
+                    });
+                })
+                .catch(error => console.error("Error loading data:", error));
+        });
+        
+        function submitOrder() {
+            let orderItems = [];
+            document.querySelectorAll(".order-input").forEach((input, index) => {
+                let quantity = input.value;
+                if (quantity > 0) {
+                    let product = document.querySelectorAll("#product-table tbody tr td:first-child")[index].innerText;
+                    orderItems.push({ product, quantity });
+                }
+            });
+            if (orderItems.length > 0) {
+                alert("Order submitted successfully!\n" + JSON.stringify(orderItems, null, 2));
+            } else {
+                alert("Please enter quantities before submitting your order.");
+            }
+        }
+    </script>
 </body>
 </html>
