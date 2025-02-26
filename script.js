@@ -1,26 +1,34 @@
-const sheetUrl = "https://sheets.googleapis.com/v4/spreadsheets/https://docs.google.com/spreadsheets/d/1m-2ap-loUD7rByaFh-mzbwlvTK0QZNp6uzLzdCVrX7s/edit?gid=0#gid=0/values/Sheet1?key=YOUR_API_KEY";
+const sheetUrl = "https://sheets.googleapis.com/v4/spreadsheets/1m-2ap-loUD7rByaFh-mzbwlvTK0QZNp6uzLzdCVrX7s/values/Sheet1?key=AIzaSyDQ6rhmIiJ7F8udDUEQ3K2lcpGXA-L0q90"; 
+// Replace 'YOUR_API_KEY' with your actual Google API Key (found in Google Cloud Console under Credentials)
+
 
 document.addEventListener("DOMContentLoaded", () => {
     fetch(sheetUrl)
-        .then(response => response.text())
+        .then(response => response.json())
         .then(data => {
-            const rows = data.split("\n").slice(1);
+            if (!data.values) {
+                console.error("No data found in Google Sheet.");
+                return;
+            }
+
+            const rows = data.values.slice(1); // Skip header row
             const table = document.getElementById("product-table");
 
             rows.forEach(row => {
-                const columns = row.split(",");
-                if (columns.length > 4) {
-                    const tr = document.createElement("tr");
-                    tr.innerHTML = `
-                        <td>${columns[0]}</td>
-                        <td>${columns[1]}</td>
-                        <td>${columns[2]}</td>
-                        <td>$${columns[3]}</td>
-                        <td><img src="${columns[4]}" alt="Product Image" width="80"></td>
-                        <td><input type="number" class="order-input" min="0"></td>
-                    `;
-                    table.appendChild(tr);
-                }
+                while (row.length < 5) row.push(""); // Fill missing columns
+
+                const [product, description, size, price, imageUrl] = row;
+
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${product || "N/A"}</td>
+                    <td>${description || "No description available"}</td>
+                    <td>${size || "N/A"}</td>
+                    <td>$${price || "0.00"}</td>
+                    <td><img src="${imageUrl || "https://via.placeholder.com/80"}" alt="Product Image" width="80"></td>
+                    <td><input type="number" class="order-input" min="0"></td>
+                `;
+                table.appendChild(tr);
             });
         })
         .catch(error => console.error("Error loading data:", error));
