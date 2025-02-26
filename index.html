@@ -3,44 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wholesale Catalog - Designated Drinks</title>
+    <title>Wholesale Product Catalog</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>Designated Drinks Wholesale Catalog</h1>
-        <input type="text" id="search" placeholder="Search products..." onkeyup="filterProducts()">
-        <select id="categoryFilter" onchange="filterByCategory(this.value)">
-            <option value="All">All Categories</option>
-        </select>
-    </header>
-    
-    <main>
-        <p id="loading">Loading products...</p>
-        <table id="productTable">
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th>Image</th>
-                    <th>Size</th>
-                    <th>Retail Price</th>
-                    <th>Wholesale Price</th>
-                    <th>Variant</th>
-                    <th>Variant Price</th>
-                    <th>Wholesale Variant Price</th>
-                    <th>Stock Level</th>
-                    <th>Quote</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
+    <div class="container">
+        <h1>Wholesale Product Catalog</h1>
+        <table>
+            <tr>
+                <th>Product</th>
+                <th>Description</th>
+                <th>Size</th>
+                <th>Price (CAD)</th>
+                <th>Image</th>
+                <th>Order Qty</th>
+            </tr>
+            <tr>
+                <td>Big Spruce Brewing Cereal Thriller</td>
+                <td>Get ready for a non-alcoholic thrill ride...</td>
+                <td>473mL Can</td>
+                <td>$4.50</td>
+                <td><img src="https://cdn.shopify.com/s/files/1/0638/0100/0105/products/cereal_thriller.jpg" alt="Product Image"></td>
+                <td><input type="number" class="order-input" min="0"></td>
+            </tr>
+            <tr>
+                <td>Harmon's El Portero Vanilla Porter</td>
+                <td>Meet the smooth and creamy vanilla porter...</td>
+                <td>355mL Can</td>
+                <td>$3.50</td>
+                <td><img src="https://cdn.shopify.com/s/files/1/0638/0100/0105/products/el_portero.jpg" alt="Product Image"></td>
+                <td><input type="number" class="order-input" min="0"></td>
+            </tr>
         </table>
-    </main>
-    
-    <footer>
-        <button onclick="sendQuoteRequest()">Request Quote</button>
-    </footer>
-    
-    <!-- Link to external JavaScript file -->
+        <button class="order-btn" onclick="submitOrder()">Submit Order</button>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
