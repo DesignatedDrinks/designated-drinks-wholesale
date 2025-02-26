@@ -5,24 +5,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wholesale Catalog - Designated Drinks</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", sans-serif;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 90%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 10px 0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        .product-info {
+            display: flex;
+            align-items: center;
+        }
+        .product-image {
+            width: 60px;
+            height: auto;
+            border-radius: 8px;
+            margin-right: 16px;
+        }
+        .variant-table {
+            width: 100%;
+            margin-top: 10px;
+            border-collapse: collapse;
+        }
+        .variant-table th, .variant-table td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        .variant-table th {
+            background-color: #f1f1f1;
+        }
+        button {
+            background-color: #007aff;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #005ecb;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Designated Drinks Wholesale Catalog</h1>
-        <input type="text" id="search" placeholder="Search products..." onkeyup="filterProducts()">
-        <select id="brandFilter" onchange="filterByBrand(this.value)">
-            <option value="All">All Brands</option>
-        </select>
-    </header>
-    
-    <main>
-        <p id="loading">Loading products...</p>
-        <div id="productContainer"></div>
-    </main>
-    
-    <footer>
-        <button onclick="sendQuoteRequest()">Request Quote</button>
-    </footer>
+    <h1>Designated Drinks Wholesale Catalog</h1>
+    <input type="text" id="search" placeholder="Search products..." onkeyup="filterProducts()">
+    <select id="brandFilter" onchange="filterByBrand(this.value)">
+        <option value="All">All Brands</option>
+    </select>
+    <div id="productContainer"></div>
     
     <script>
         const SHEET_ID = "1m-2ap-loUD7rByaFh-mzbwlvTK0QZNp6uzLzdCVrX7s";
@@ -37,16 +90,10 @@
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 const data = await response.json();
-                console.log("Google Sheets API Response:", data);
-
                 if (!data.values || data.values.length < 2) {
-                    console.error("No valid product data found.");
-                    document.getElementById("loading").innerText = "No products available.";
+                    document.getElementById("productContainer").innerHTML = "No products available.";
                     return;
                 }
-                
-                document.getElementById("loading").style.display = "none";
-                
                 const rows = data.values.slice(1);
                 const productsByBrand = {};
 
@@ -71,24 +118,18 @@
 
                 renderProducts(productsByBrand);
             } catch (error) {
-                console.error("Error fetching data:", error);
-                document.getElementById("loading").innerText = "Error loading products.";
+                document.getElementById("productContainer").innerHTML = "Error loading products.";
             }
         }
 
         function renderProducts(productsByBrand) {
             const container = document.getElementById("productContainer");
             container.innerHTML = "";
-            
             Object.keys(productsByBrand).forEach(brand => {
-                const brandSection = document.createElement("div");
-                brandSection.innerHTML = `<h2>${brand}</h2>`;
-                
                 Object.keys(productsByBrand[brand]).forEach(productName => {
                     const product = productsByBrand[brand][productName];
                     const productCard = document.createElement("div");
                     productCard.classList.add("product-card");
-                    
                     productCard.innerHTML = `
                         <div class="product-info">
                             <img src="${product.imageUrl}" alt="${productName}" class="product-image">
@@ -120,10 +161,8 @@
                             </tbody>
                         </table>
                     `;
-                    brandSection.appendChild(productCard);
+                    container.appendChild(productCard);
                 });
-                
-                container.appendChild(brandSection);
             });
         }
 
