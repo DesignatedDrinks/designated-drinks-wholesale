@@ -4,22 +4,29 @@ document.addEventListener("DOMContentLoaded", () => {
     fetch(sheetUrl)
         .then(response => response.json())
         .then(data => {
-            const rows = data.values.slice(1); // Remove header row
+            if (!data.values) {
+                console.error("No data found in Google Sheet.");
+                return;
+            }
+
+            const rows = data.values.slice(1); // Skip header row
             const table = document.getElementById("product-table");
 
             rows.forEach(row => {
-                if (row.length > 4) {
-                    const tr = document.createElement("tr");
-                    tr.innerHTML = `
-                        <td>${row[0]}</td>
-                        <td>${row[1]}</td>
-                        <td>${row[2]}</td>
-                        <td>$${row[3]}</td>
-                        <td><img src="${row[4]}" alt="Product Image" width="80"></td>
-                        <td><input type="number" class="order-input" min="0"></td>
-                    `;
-                    table.appendChild(tr);
-                }
+                while (row.length < 5) row.push(""); // Fill missing columns
+
+                const [product, description, size, price, imageUrl] = row;
+
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${product || "N/A"}</td>
+                    <td>${description || "No description available"}</td>
+                    <td>${size || "N/A"}</td>
+                    <td>$${price || "0.00"}</td>
+                    <td><img src="${imageUrl || "https://via.placeholder.com/80"}" alt="Product Image" width="80"></td>
+                    <td><input type="number" class="order-input" min="0"></td>
+                `;
+                table.appendChild(tr);
             });
         })
         .catch(error => console.error("Error loading data:", error));
